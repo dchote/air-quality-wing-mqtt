@@ -1,0 +1,14 @@
+.DS_Store
+*.bin
+*.hex
+*.elf
+*.lst
+*.map
+*.bin*
+AirQualityWing.cpp
+*.ipch
+*.dfu
+*.o
+*.d
+
+.vscode
