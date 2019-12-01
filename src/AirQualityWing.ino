@@ -10,6 +10,8 @@
 #include "MQTT.h"
 #include "board.h"
 
+char *MQTTServer = (char*)"172.18.0.5";
+
 // Logger
 SerialLogHandler logHandler(115200, LOG_LEVEL_ERROR, {
     { "app", LOG_LEVEL_WARN }, // enable all app messages
@@ -22,7 +24,7 @@ void AirQualityWingEvent();
 AirQualityWing AirQual = AirQualityWing();
 
 // MQTT object
-MQTT client("172.18.0.5", 1883, mqtt_callback);
+MQTT client(MQTTServer, 1883, mqtt_callback);
 
 // Handler is called in main loop.
 // Ok to run Particle.Publish
@@ -54,12 +56,7 @@ void AirQualityWingEvent() {
 
 // MQTT ecieve message
 void mqtt_callback(char* topic, byte* payload, unsigned int length) {
-    char p[length + 1];
-    memcpy(p, payload, length);
-    p[length] = NULL;
-
-    Serial.print( "Got a message : " );
-    Serial.print( p );
+  // dont care...
 }
 
 
