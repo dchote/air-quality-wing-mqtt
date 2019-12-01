@@ -98,13 +98,13 @@ void setup() {
     HPMA1150_EN_PIN       //HPMA int pin
   };
 
-  client.connect("airqualitywing");
+  client.connect(Particle.deviceID());
 
   // Setup & Begin Air Quality
   AirQual.setup(AirQualityWingEvent, defaultSettings);
   AirQual.begin();
 
-  AirQual.setInterval(10000);
+  AirQual.setInterval(15000);
 
   // Startup message
   Serial.println("Air Quality Wing for Particle Mesh");
