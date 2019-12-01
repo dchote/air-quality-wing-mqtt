@@ -11,6 +11,7 @@
 #include "board.h"
 
 char *MQTTServer = (char*)"172.18.0.5";
+String DeviceName = "unknown";
 
 // Logger
 SerialLogHandler logHandler(115200, LOG_LEVEL_ERROR, {
@@ -33,28 +34,32 @@ void AirQualityWingEvent() {
   Log.trace("pub");
 
   if (client.isConnected()) {
-    String myId = System.deviceID();
     AirQualityWingData_t aqData = AirQual.getData();
 
     if (aqData.hpma115.hasData) {
-      client.publish("environment/" + myId + "/pm25", String::format("%d", aqData.hpma115.data.pm25));
-      client.publish("environment/" + myId + "/pm10", String::format("%d", aqData.hpma115.data.pm10));
+      client.publish("environment/" + DeviceName + "/pm25", String::format("%d", aqData.hpma115.data.pm25));
+      client.publish("environment/" + DeviceName + "/pm10", String::format("%d", aqData.hpma115.data.pm10));
     }
 
     if (aqData.si7021.hasData) {
-      client.publish("environment/" + myId + "/temperature", String::format("%.2f", aqData.si7021.data.temperature));
-      client.publish("environment/" + myId + "/humidity", String::format("%.2f", aqData.si7021.data.humidity));
+      client.publish("environment/" + DeviceName + "/temperature", String::format("%.2f", aqData.si7021.data.temperature));
+      client.publish("environment/" + DeviceName + "/humidity", String::format("%.2f", aqData.si7021.data.humidity));
     }
 
     if (aqData.ccs811.hasData) {
-      client.publish("environment/" + myId + "/tvoc", String::format("%d", aqData.ccs811.data.tvoc));
-      client.publish("environment/" + myId + "/co2", String::format("%d", aqData.ccs811.data.c02));
+      client.publish("environment/" + DeviceName + "/tvoc", String::format("%d", aqData.ccs811.data.tvoc));
+      client.publish("environment/" + DeviceName + "/co2", String::format("%d", aqData.ccs811.data.c02));
     }
   }
 
 }
 
-// MQTT ecieve message
+// Particle device name handler
+void devicename_callback(const char *topic, const char *data) {
+    DeviceName = String(data);
+}
+
+// MQTT recieve message
 void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   // dont care...
 }
@@ -70,6 +75,11 @@ void setup() {
   // Set up PC based UART (for debugging)
   Serial.blockOnOverrun(false);
   Serial.begin();
+
+  // Set up keep alive
+  Particle.keepAlive(60);
+  Particle.subscribe("particle/device/name", devicename_callback, MY_DEVICES);
+  Particle.publish("particle/device/name", PRIVATE);
 
   // Set up I2C
   Wire.setSpeed(I2C_CLK_SPEED);
@@ -95,9 +105,6 @@ void setup() {
   AirQual.begin();
 
   AirQual.setInterval(10000);
-
-  // Set up keep alive
-  Particle.keepAlive(60);
 
   // Startup message
   Serial.println("Air Quality Wing for Particle Mesh");
