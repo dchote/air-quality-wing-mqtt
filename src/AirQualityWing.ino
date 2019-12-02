@@ -1,7 +1,7 @@
 /*
- * Project Air Quality Wing Library Example
- * Description: Basic example using the Air Quality Wing for Particle Mesh
- * Author: Jared Wolff (Circuit Dojo LLC)
+ * Project: Particle Air Quality Wing over MQTT
+ * Description: MQTT Sketch for the Particle Air Quality Wing
+ * Author: Jared Wolff (Circuit Dojo LLC) & Daniel Chote (https://github.com/dchote)
  * Date: 10/27/2019
  * License: GNU GPLv3
  */
