@@ -23,6 +23,7 @@ void AirQualityWingEvent();
 
 // AirQualityWing object
 AirQualityWing AirQual = AirQualityWing();
+AirQualityWingData_t aqData;
 
 // MQTT object
 MQTT client(MQTTServer, 1883, mqtt_callback);
@@ -34,7 +35,7 @@ void AirQualityWingEvent() {
   Log.trace("pub");
 
   if (client.isConnected()) {
-    AirQualityWingData_t aqData = AirQual.getData();
+    aqData = AirQual.getData();
 
     if (aqData.hpma115.hasData) {
       client.publish("environment/" + DeviceName + "/pm25", String::format("%d", aqData.hpma115.data.pm25));
