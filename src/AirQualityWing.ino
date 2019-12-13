@@ -13,6 +13,8 @@
 char *MQTTServer = (char*)"172.18.0.5";
 String DeviceName = "unknown";
 
+long lastReconnectAttempt = 0;
+
 // Logger
 SerialLogHandler logHandler(115200, LOG_LEVEL_ERROR, {
     { "app", LOG_LEVEL_WARN }, // enable all app messages
@@ -51,6 +53,21 @@ void AirQualityWingEvent() {
       client.publish("environment/" + DeviceName + "/tvoc", String::format("%d", aqData.ccs811.data.tvoc));
       client.publish("environment/" + DeviceName + "/co2", String::format("%d", aqData.ccs811.data.c02));
     }
+  } else {
+    // attempt to reconnect every 5 seconds
+    long now = millis();
+    if (now - lastReconnectAttempt > 5000) {
+      lastReconnectAttempt = now;
+
+      // Attempt to reconnect
+      client.connect(Particle.deviceID());
+
+      // if connected, reset lastReconnectAttemp
+      if (client.isConnected()) {
+        lastReconnectAttempt = 0;
+      }
+    }
+    
   }
 
 }
